@@ -10,17 +10,21 @@ import random
 class Deck(object):
     """Deck Class."""
 
-    def __init__(self, deck_type='pack'):
+    def __init__(self, deck_type='pack', limit=7):
         """Init the Deck.
 
         this should either be as a full deck of cards or as an empty deck."""
 
         self.cards = []
+        self.limit = None
+        self.deck_type = deck_type
 
         if deck_type == "pack":
             for s in ['spades', 'diamonds', 'clubs', 'hearts']:
                 for n in range(1,14):
                     self.cards.append(Card(s,n))
+        elif deck_type == "hand":
+            self.limit = limit
         if deck_type not in ("pack, hand"):
             raise exceptions.NotADeck
 
@@ -40,13 +44,19 @@ class Deck(object):
             return self.cards.pop(pos)
 
     def return_card(self, card, position='top'):
-        if position == 'top':
-            self.cards.insert(0,card)
-        elif position == 'bottom':
-            self.cards.append(card)
+        if (self.limit is not None and len(self.cards) < self.limit) or self.limit is None:
+            if position == 'top':
+                self.cards.insert(0,card)
+            elif position == 'bottom':
+                self.cards.append(card)
+            else:
+                pos = random.randint(0, len(self.cards))
+                self.cards.insert(pos, card)
         else:
-            pos = random.randint(0, len(self.cards))
-            self.cards.insert(pos, card)
+            raise exceptions.DeckLimitExceeded(
+                    "Deck limit of {} Exceeded".format(self.limit),
+                    card
+            )
 
     def show(self):
         if len(self.cards) > 0:
@@ -56,4 +66,4 @@ class Deck(object):
                 else:
                     print("{} of {}".format(i.face, i.suite))
         else:
-            print("No cards in Deck")
+            print("No cards in Deck of type {}".format(self.deck_type))

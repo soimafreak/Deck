@@ -14,3 +14,8 @@ class NotADeck(Exception):
     """Exception class for When invalide deck type requested errors."""
 
     pass
+
+class DeckLimitExceeded(Exception):
+    """Exception class for When Deck limit is exceeded."""
+
+    pass
